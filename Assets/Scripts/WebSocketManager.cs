@@ -46,6 +46,12 @@ public class WebSocketManager : MonoBehaviour
     {
         try
         {
+            if (sharedObject == null)
+            {
+                Debug.LogError("SharedObject not assigned to WebSocketManager!");
+                return;
+            }
+            
             await ConnectToServer();
         }
         catch (Exception e)
@@ -110,7 +116,7 @@ public class WebSocketManager : MonoBehaviour
         _websocket.OnMessage += (bytes) =>
         {
             var message = System.Text.Encoding.UTF8.GetString(bytes);
-            Debug.Log($"Received message: {message}");
+            Debug.Log($"Raw message received: {message}");
             HandleMessage(message);
         };
 
@@ -141,21 +147,51 @@ public class WebSocketManager : MonoBehaviour
     {
         try
         {
+            Debug.Log($"Attempting to parse message: {message}");
+            
             // Parse the incoming JSON message
             MatrixData matrixData = JsonConvert.DeserializeObject<MatrixData>(message);
             
+            if (matrixData == null)
+            {
+                Debug.LogError("Deserialized matrixData is null");
+                return;
+            }
+            
+            if (matrixData.matrix == null)
+            {
+                Debug.LogError("Matrix data is null");
+                return;
+            }
+
+            Debug.Log($"Matrix dimensions: {matrixData.matrix.Length} x {matrixData.matrix[0].Length}");
+            
             if (matrixData?.matrix != null)
             {
+                // Convert jagged array to 2D array
+                float[,] matrix2D = new float[3, 3];
+                for (int i = 0; i < 3; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        matrix2D[i, j] = matrixData.matrix[i][j];
+                    }
+                }
+
                 if (sharedObject != null)
                 {
-                    // Process the matrix directly
-                    sharedObject.ProcessMatrixInput(matrixData.matrix);
+                    // Process the converted matrix
+                    sharedObject.ProcessMatrixInput(matrix2D);
+                }
+                else
+                {
+                    Debug.LogWarning("SharedObject is not assigned!");
                 }
             }
         }
         catch (Exception e)
         {
-            Debug.LogError($"Error handling message: {e.Message}");
+            Debug.LogError($"Error handling message: {e.Message}\nStack trace: {e.StackTrace}\nMessage content: {message}");
         }
     }
 
@@ -163,7 +199,7 @@ public class WebSocketManager : MonoBehaviour
     [Serializable]
     private class MatrixData
     {
-        public float[,] matrix; // 3x3 matrix
+        public float[][] matrix; // Changed from float[,] to float[][]
         public string timestamp;
     }
 

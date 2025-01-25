@@ -10,13 +10,61 @@ public class ColocationObjectController : NetworkBehaviour
 
     private Vector3 previousVelocity;
     private float lastMessageTime;
+    private bool isInitialized = false;
 
     //[SerializeField] private float accelerationRate = 5f;  // Units per second squared
     //[SerializeField] private float drag = 0.5f; 
 
+    public override void Spawned()
+    {
+        Debug.Log($"Object spawned. HasStateAuthority: {Object.HasStateAuthority}");
+        // Initialize when the object is spawned on the network
+        if (Object.HasStateAuthority)
+        {
+            NetworkedPosition = transform.position;
+            NetworkedVelocity = Vector3.zero;
+            Debug.Log("Initialized networked properties");
+        }
+        previousVelocity = Vector3.zero;
+        lastMessageTime = Time.time;
+        isInitialized = true;
+    }
+
     public void ProcessMatrixInput(float[,] matrix)
     {
-        if (!Object.HasStateAuthority) return;
+
+        // Debug print the entire matrix
+        string matrixString = "Received Matrix:\n";
+        for (int i = 0; i < 3; i++)
+        {
+            matrixString += "[";
+            for (int j = 0; j < 3; j++)
+            {
+                matrixString += $" {matrix[i,j]} ";
+            }
+            matrixString += "]\n";
+        }
+        Debug.Log(matrixString);
+
+
+        
+        if (!isInitialized)
+        {
+            Debug.LogWarning("Object not yet initialized");
+            return;
+        }
+
+        if (matrix == null)
+        {
+            Debug.LogError("Received null matrix");
+            return;
+        }
+
+        if (!Object.HasStateAuthority)
+        {
+            Debug.LogWarning("No state authority");
+            return;
+        }
 
         // Calculate actual dt based on time since last message
         float currentTime = Time.time;

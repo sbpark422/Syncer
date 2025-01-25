@@ -53,6 +53,22 @@ public class WebSocketManager : MonoBehaviour
             }
             
             await ConnectToServer();
+
+
+            // Wait for platform initialization first
+            // #if !UNITY_EDITOR
+            // Meta.XR.MultiplayerBlocks.Shared.PlatformInit.GetEntitlementInformation(async (platformInfo) => {
+            //     if (platformInfo.IsEntitled) {
+            //         await ConnectToServer();
+            //     } else {
+            //         Debug.LogError("User is not entitled to use this application");
+            //     }
+            // });
+            // #else
+            // // In editor, connect directly
+            // await ConnectToServer();
+            // #endif
+            
         }
         catch (Exception e)
         {

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 939e07d58bc74256b6cb58d86fe35a56, type: 3}
+  m_Name: OculusProjectSetupSettings
+  m_EditorClassIdentifier: 
+  boolProperties:
+    keys:
+    - OVRProjectSetup.OVRProjectSetup.OVRConfigurationTask.6a7368c0a11d1520d3e9fb9d57619235.Ignored.Android
+    - OVRProjectSetup.OVRProjectSetup.OVRConfigurationTask.6a7368c0a11d1520d3e9fb9d57619235.Ignored.Standalone
+    - OVRProjectSetup.OVRProjectSetup.OVRConfigurationTask.d091363c2f43fb028e3651f27ae2ba48.Ignored.Android
+    - OVRProjectSetup.OVRProjectSetup.OVRConfigurationTask.d091363c2f43fb028e3651f27ae2ba48.Ignored.Standalone
+    - OVRProjectSetup.OVRProjectSetup.OVRConfigurationTask.3cdcf16f217a82ddeb6909549e5dd07d.Ignored.Android
+    - OVRProjectSetup.OVRProjectSetup.OVRConfigurationTask.e8e6b3d92777e2e3ae48d4431a8ec9c1.Ignored.Android
+    values: 010101010101
+  intProperties:
+    keys: []
+    values: 

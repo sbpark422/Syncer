@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using NativeWebSocket;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 public class WebSocketManager : MonoBehaviour
 {
@@ -28,6 +29,8 @@ public class WebSocketManager : MonoBehaviour
     public const string MESSAGE_TYPE_COMMAND = "command";
     public const string MESSAGE_TYPE_RESPONSE = "response";
 
+    public ColocationObjectController sharedObject; // Assign this in the Inspector
+
     private void Awake()
     {
         if (_instance != null && _instance != this)
@@ -43,7 +46,29 @@ public class WebSocketManager : MonoBehaviour
     {
         try
         {
+            if (sharedObject == null)
+            {
+                Debug.LogError("SharedObject not assigned to WebSocketManager!");
+                return;
+            }
+            
             await ConnectToServer();
+
+
+            // Wait for platform initialization first
+            // #if !UNITY_EDITOR
+            // Meta.XR.MultiplayerBlocks.Shared.PlatformInit.GetEntitlementInformation(async (platformInfo) => {
+            //     if (platformInfo.IsEntitled) {
+            //         await ConnectToServer();
+            //     } else {
+            //         Debug.LogError("User is not entitled to use this application");
+            //     }
+            // });
+            // #else
+            // // In editor, connect directly
+            // await ConnectToServer();
+            // #endif
+            
         }
         catch (Exception e)
         {
@@ -107,7 +132,7 @@ public class WebSocketManager : MonoBehaviour
         _websocket.OnMessage += (bytes) =>
         {
             var message = System.Text.Encoding.UTF8.GetString(bytes);
-            Debug.Log($"Received message: {message}");
+            Debug.Log($"Raw message received: {message}");
             HandleMessage(message);
         };
 
@@ -138,53 +163,59 @@ public class WebSocketManager : MonoBehaviour
     {
         try
         {
-            // Parse the incoming JSON message
-            MessageData messageData = JsonUtility.FromJson<MessageData>(message);
+            Debug.Log($"Attempting to parse message: {message}");
             
-            Debug.Log($"Received message type: {messageData.type}");
-
-            if (messageData.type == MESSAGE_TYPE_COMMAND)
+            // Parse the incoming JSON message
+            MatrixData matrixData = JsonConvert.DeserializeObject<MatrixData>(message);
+            
+            if (matrixData == null)
             {
-                // Process the command and send response
-                ProcessCommand(messageData.command);
+                Debug.LogError("Deserialized matrixData is null");
+                return;
             }
             
-            // Broadcast the message to any listeners
-            OnMessageReceived?.Invoke(message);
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"Error handling message: {e.Message}");
-        }
-    }
-
-    private async void ProcessCommand(string command)
-    {
-        try
-        {
-            var responseData = new MessageData
+            if (matrixData.matrix == null)
             {
-                type = MESSAGE_TYPE_RESPONSE,
-                command = command,
-                response = $"Processed command: {command}"
-            };
+                Debug.LogError("Matrix data is null");
+                return;
+            }
 
-            await SendMessage(JsonUtility.ToJson(responseData));
+            Debug.Log($"Matrix dimensions: {matrixData.matrix.Length} x {matrixData.matrix[0].Length}");
+            
+            if (matrixData?.matrix != null)
+            {
+                // Convert jagged array to 2D array
+                float[,] matrix2D = new float[3, 3];
+                for (int i = 0; i < 3; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        matrix2D[i, j] = matrixData.matrix[i][j];
+                    }
+                }
+
+                if (sharedObject != null)
+                {
+                    // Process the converted matrix
+                    sharedObject.ProcessMatrixInput(matrix2D);
+                }
+                else
+                {
+                    Debug.LogWarning("SharedObject is not assigned!");
+                }
+            }
         }
         catch (Exception e)
         {
-            Debug.LogError($"Error processing command: {e.Message}");
+            Debug.LogError($"Error handling message: {e.Message}\nStack trace: {e.StackTrace}\nMessage content: {message}");
         }
     }
 
     // Data structure for messages
     [Serializable]
-    private class MessageData
+    private class MatrixData
     {
-        public string type;
-        public string command;
-        public string response;
-        public float value;
+        public float[][] matrix; // Changed from float[,] to float[][]
         public string timestamp;
     }
 

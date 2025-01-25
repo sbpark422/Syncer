@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using NativeWebSocket;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 public class WebSocketManager : MonoBehaviour
 {
@@ -27,6 +28,8 @@ public class WebSocketManager : MonoBehaviour
     // Add message type constants
     public const string MESSAGE_TYPE_COMMAND = "command";
     public const string MESSAGE_TYPE_RESPONSE = "response";
+
+    public ColocationObjectController sharedObject; // Assign this in the Inspector
 
     private void Awake()
     {
@@ -139,18 +142,16 @@ public class WebSocketManager : MonoBehaviour
         try
         {
             // Parse the incoming JSON message
-            MessageData messageData = JsonUtility.FromJson<MessageData>(message);
+            MatrixData matrixData = JsonConvert.DeserializeObject<MatrixData>(message);
             
-            Debug.Log($"Received message type: {messageData.type}");
-
-            if (messageData.type == MESSAGE_TYPE_COMMAND)
+            if (matrixData?.matrix != null)
             {
-                // Process the command and send response
-                ProcessCommand(messageData.command);
+                if (sharedObject != null)
+                {
+                    // Process the matrix directly
+                    sharedObject.ProcessMatrixInput(matrixData.matrix);
+                }
             }
-            
-            // Broadcast the message to any listeners
-            OnMessageReceived?.Invoke(message);
         }
         catch (Exception e)
         {
@@ -158,33 +159,11 @@ public class WebSocketManager : MonoBehaviour
         }
     }
 
-    private async void ProcessCommand(string command)
-    {
-        try
-        {
-            var responseData = new MessageData
-            {
-                type = MESSAGE_TYPE_RESPONSE,
-                command = command,
-                response = $"Processed command: {command}"
-            };
-
-            await SendMessage(JsonUtility.ToJson(responseData));
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"Error processing command: {e.Message}");
-        }
-    }
-
     // Data structure for messages
     [Serializable]
-    private class MessageData
+    private class MatrixData
     {
-        public string type;
-        public string command;
-        public string response;
-        public float value;
+        public float[,] matrix; // 3x3 matrix
         public string timestamp;
     }
 

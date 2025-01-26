@@ -47,6 +47,10 @@ public class NetworkedOppyController : NetworkBehaviour
     [Networked] 
     private JumpState CurrentJumpState { get; set; }
 
+    [Header("Coin Collection")]
+    [SerializeField] private Text coinCountText;
+    private int coinCount = 0;
+
     private void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -164,23 +168,35 @@ public class NetworkedOppyController : NetworkBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Obstacle"))
+        if (other.CompareTag("Coins"))
         {
-            // Flash red and play failure sound
-            if (_oppyLightGlow != null)
+            // Increment coin count
+            coinCount++;
+            
+            // Update UI
+            if (coinCountText != null)
             {
-                _oppyLightGlow.SetRed(true);
-                StartCoroutine(ResetGlow());
+                coinCountText.text = $"Coins: {coinCount}";
             }
+
+            // // Optional: Flash green on coin collection
+            // if (_oppyLightGlow != null)
+            // {
+            //     _oppyLightGlow.SetGlowActive(true);
+            //     StartCoroutine(ResetGlow());
+            // }
+
+            // Destroy the collected coin
+            Destroy(other.gameObject);
         }
     }
 
-    private IEnumerator ResetGlow()
-    {
-        yield return new WaitForSeconds(0.5f);  // Flash duration
-        if (_oppyLightGlow != null)
-        {
-            _oppyLightGlow.SetRed(false);
-        }
-    }
+    // private IEnumerator ResetGlow()
+    // {
+    //     yield return new WaitForSeconds(0.2f);  // Short flash duration
+    //     if (_oppyLightGlow != null)
+    //     {
+    //         _oppyLightGlow.SetGlowActive(false);
+    //     }
+    // }
 } 

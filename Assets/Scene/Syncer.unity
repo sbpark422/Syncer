@@ -4056,23 +4056,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f0a198fdf80a4719a3452c3c24741e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _oppyLightGlow: {fileID: 0}
   bandPowerStream1: {fileID: 1186813022}
   bandPowerStream2: {fileID: 1144986248}
-  focusStream: {fileID: 0}
-  runThreshold: 0.1
-  minSpeed: 0.3
-  maxSpeed: 1
-  speedMultiplier: 1
-  speedSmoothTime: 0.1
-  runDistance: 5
-  runSpeed: 2
-  runDirection: {x: 0, y: 0, z: 1}
-  groundPlanes: []
-  groundScrollSpeed: 2
-  groundLength: 10
   fixedPosition: {x: 0, y: 0, z: 0}
   maintainFixedPosition: 1
-  coinCountText: {fileID: 0}
   basicJumpThreshold: 0.5
   jump2Threshold: 0.6
   ninjaJumpThreshold: 0.7
@@ -4081,6 +4069,7 @@ MonoBehaviour:
   useTestMode: 1
   testMinInterval: 0.5
   testMaxInterval: 2
+  coinCountText: {fileID: 0}
 --- !u!1 &248692455
 GameObject:
   m_ObjectHideFlags: 0
@@ -8945,23 +8934,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f0a198fdf80a4719a3452c3c24741e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _oppyLightGlow: {fileID: 0}
   bandPowerStream1: {fileID: 1186813022}
   bandPowerStream2: {fileID: 1144986248}
-  focusStream: {fileID: 0}
-  runThreshold: 0.1
-  minSpeed: 0.3
-  maxSpeed: 1
-  speedMultiplier: 1
-  speedSmoothTime: 0.1
-  runDistance: 5
-  runSpeed: 2
-  runDirection: {x: 0, y: 0, z: 1}
-  groundPlanes: []
-  groundScrollSpeed: 2
-  groundLength: 10
   fixedPosition: {x: 0, y: 0, z: 0}
   maintainFixedPosition: 1
-  coinCountText: {fileID: 0}
   basicJumpThreshold: 0.5
   jump2Threshold: 0.6
   ninjaJumpThreshold: 0.7
@@ -8970,6 +8947,7 @@ MonoBehaviour:
   useTestMode: 1
   testMinInterval: 0.5
   testMaxInterval: 2
+  coinCountText: {fileID: 0}
 --- !u!114 &599144693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13777,7 +13755,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ae6a6bba55804acfb1c18051075b878, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 1691878185}
+  player: {fileID: 2057329546}
   rareTileRepeatInterval: 2
   rareTile: {fileID: 111330, guid: 3e2fa0b7b4f87460192dd3baa0c94ad1, type: 3}
   coins: {fileID: 107180, guid: 6f9baccb931ad4c8e9cb6be44a3c897a, type: 3}
@@ -13789,7 +13767,7 @@ MonoBehaviour:
     tilesQuantity:
     - tile: {fileID: 187052, guid: 282dc8a32274544d19d424b0e6a1d4fe, type: 3}
       coinController:
-        coinsAlignment: 3
+        coinsAlignment: 1
         coinsSpawn: 1
         coinsPath: 0
       obstacleController:
@@ -13797,21 +13775,21 @@ MonoBehaviour:
         obstacleTypes: 3
         singleRowBlocker: 0
         rowBlocker: 0
-        obstacleSpawnDirection: 0
+        obstacleSpawnDirection: 1
     - tile: {fileID: 112086, guid: 3bafccc6b0842495a83401d5373c52ab, type: 3}
       coinController:
-        coinsAlignment: 3
+        coinsAlignment: 1
         coinsSpawn: 1
-        coinsPath: 0
+        coinsPath: 1
       obstacleController:
         obstacleQuantity: 1
         obstacleTypes: 3
         singleRowBlocker: 0
         rowBlocker: 0
-        obstacleSpawnDirection: 0
+        obstacleSpawnDirection: 1
     - tile: {fileID: 199146, guid: 37ddf59686edd4400a6ae6053e337d12, type: 3}
       coinController:
-        coinsAlignment: 3
+        coinsAlignment: 1
         coinsSpawn: 1
         coinsPath: 0
       obstacleController:
@@ -13819,18 +13797,18 @@ MonoBehaviour:
         obstacleTypes: 3
         singleRowBlocker: 0
         rowBlocker: 0
-        obstacleSpawnDirection: 0
+        obstacleSpawnDirection: 1
     - tile: {fileID: 181076, guid: 65e6c216b06bc4d879df33d9be8dbdef, type: 3}
       coinController:
         coinsAlignment: 0
         coinsSpawn: 1
-        coinsPath: 0
+        coinsPath: 1
       obstacleController:
         obstacleQuantity: 1
         obstacleTypes: 3
         singleRowBlocker: 0
         rowBlocker: 0
-        obstacleSpawnDirection: 0
+        obstacleSpawnDirection: 1
     - tile: {fileID: 188334, guid: 6d81d98a9e7094096b2bb2726958431e, type: 3}
       coinController:
         coinsAlignment: 3
@@ -13841,15 +13819,15 @@ MonoBehaviour:
         obstacleTypes: 3
         singleRowBlocker: 0
         rowBlocker: 0
-        obstacleSpawnDirection: 0
+        obstacleSpawnDirection: 1
   singleRowBlocker:
-  - {fileID: 156250, guid: 2eeca6d029c4c470685dad6114bbbce4, type: 3}
-  - {fileID: 172230, guid: e4000683d902d4b7398b58acf32602a8, type: 3}
-  - {fileID: 118278, guid: c0299e4cf98e24abd86b5faac69b90a9, type: 3}
+  - {fileID: 130136, guid: 440745a2908a04dfdbf4285f05677d7b, type: 3}
+  - {fileID: 130136, guid: 440745a2908a04dfdbf4285f05677d7b, type: 3}
+  - {fileID: 130136, guid: 440745a2908a04dfdbf4285f05677d7b, type: 3}
   rowBlocker:
   - {fileID: 130136, guid: 440745a2908a04dfdbf4285f05677d7b, type: 3}
-  - {fileID: 137808, guid: abb33b8b51d8549839b0f86461aab0d5, type: 3}
-  - {fileID: 171548, guid: 873ca02ca532b43569dff1db5a387b04, type: 3}
+  - {fileID: 130136, guid: 440745a2908a04dfdbf4285f05677d7b, type: 3}
+  - {fileID: 130136, guid: 440745a2908a04dfdbf4285f05677d7b, type: 3}
   labelScore: {fileID: 742465672}
   speed: 10
 --- !u!4 &973601239
@@ -17465,23 +17443,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f0a198fdf80a4719a3452c3c24741e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _oppyLightGlow: {fileID: 0}
   bandPowerStream1: {fileID: 1186813022}
   bandPowerStream2: {fileID: 1144986248}
-  focusStream: {fileID: 0}
-  runThreshold: 0.1
-  minSpeed: 0.3
-  maxSpeed: 1
-  speedMultiplier: 1
-  speedSmoothTime: 0.1
-  runDistance: 5
-  runSpeed: 2
-  runDirection: {x: 0, y: 0, z: 1}
-  groundPlanes: []
-  groundScrollSpeed: 2
-  groundLength: 10
   fixedPosition: {x: 0, y: 0, z: 0}
   maintainFixedPosition: 1
-  coinCountText: {fileID: 0}
   basicJumpThreshold: 0.5
   jump2Threshold: 0.6
   ninjaJumpThreshold: 0.7
@@ -17490,6 +17456,7 @@ MonoBehaviour:
   useTestMode: 1
   testMinInterval: 0.5
   testMaxInterval: 2
+  coinCountText: {fileID: 0}
 --- !u!114 &1229310009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27005,17 +26972,17 @@ PrefabInstance:
     - target: {fileID: 5224702894496734085, guid: bd8120e4a733d1b4ab18fbeb92853d5a,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 1
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 5224702894496734085, guid: bd8120e4a733d1b4ab18fbeb92853d5a,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 1
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 5224702894496734085, guid: bd8120e4a733d1b4ab18fbeb92853d5a,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 1
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 5224702894496734085, guid: bd8120e4a733d1b4ab18fbeb92853d5a,
         type: 3}
@@ -27123,7 +27090,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7107983976591372239, guid: bd8120e4a733d1b4ab18fbeb92853d5a,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2057329547}
+      addedObject: {fileID: 2057329556}
   m_SourcePrefab: {fileID: 100100000, guid: bd8120e4a733d1b4ab18fbeb92853d5a, type: 3}
 --- !u!1 &2057329546 stripped
 GameObject:
@@ -27131,27 +27098,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 2057329545}
   m_PrefabAsset: {fileID: 0}
---- !u!65 &2057329547
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2057329546}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.69663334, z: 0.70322824}
-  m_Center: {x: -0, y: 0.88372016, z: -0.14838588}
 --- !u!114 &2057329548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27214,23 +27160,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f0a198fdf80a4719a3452c3c24741e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _oppyLightGlow: {fileID: 0}
   bandPowerStream1: {fileID: 1186813022}
   bandPowerStream2: {fileID: 1144986248}
-  focusStream: {fileID: 0}
-  runThreshold: 0.1
-  minSpeed: 0.3
-  maxSpeed: 1
-  speedMultiplier: 1
-  speedSmoothTime: 0.1
-  runDistance: 5
-  runSpeed: 2
-  runDirection: {x: 0, y: 0, z: 1}
-  groundPlanes: []
-  groundScrollSpeed: 2
-  groundLength: 10
   fixedPosition: {x: 0, y: 0, z: 0}
   maintainFixedPosition: 1
-  coinCountText: {fileID: 0}
   basicJumpThreshold: 0.5
   jump2Threshold: 0.6
   ninjaJumpThreshold: 0.7
@@ -27239,6 +27173,30 @@ MonoBehaviour:
   useTestMode: 1
   testMinInterval: 0.5
   testMaxInterval: 2
+  coinCountText: {fileID: 0}
+--- !u!136 &2057329556
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2057329546}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.58412224
+  m_Height: 1.967407
+  m_Direction: 1
+  m_Center: {x: 0, y: 1.1286405, z: 0.08412222}
 --- !u!1 &2057911996
 GameObject:
   m_ObjectHideFlags: 0

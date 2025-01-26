@@ -45,6 +45,19 @@ public class NetworkedOppyController : NetworkBehaviour
     [SerializeField] private float jump2Threshold = 0.6f;        // For Jump2
     [SerializeField] private float ninjaJumpThreshold = 0.7f;    // For Ninja Jump
 
+    // Add debug UI elements
+    [Header("Debug")]
+    [SerializeField] private bool showDebugUI = true;
+    [SerializeField] private Text debugText; // Optional UI Text component
+
+    // Add testing mode
+    [Header("Testing")]
+    [SerializeField] private bool useTestMode = true;
+    [SerializeField] private float testMinInterval = 0.5f;
+    [SerializeField] private float testMaxInterval = 2f;
+    private float nextTestChangeTime;
+    private float testAlphaValue;
+
     // States matching animator
     private enum JumpState
     {
@@ -62,13 +75,6 @@ public class NetworkedOppyController : NetworkBehaviour
 
     [Networked] 
     private float CurrentSpeed { get; set; }  // Changed from NetworkFloat to float
-
-    private float _currentVelocity;  // Used for smoothing
-    private float _targetSpeed;      // Speed we're moving towards
-
-    private Vector3 _startPosition;
-    private bool _runningForward = true;
-    private float _distanceTraveled = 0f;
 
     private void Awake()
     {
@@ -91,7 +97,7 @@ public class NetworkedOppyController : NetworkBehaviour
         }
         
         // Set initial animation state and position
-        _animator.SetBool("Running", false);
+        //_animator.SetBool("Running", false);
         
         if (maintainFixedPosition)
         {
@@ -114,13 +120,27 @@ public class NetworkedOppyController : NetworkBehaviour
             }
 
             float avgAlpha = CalculateAverageAlpha();
+            
+            // Debug logging
+            Debug.Log($"Alpha1: {bandPowerStream1?.AverageBandPower.Alpha:F2}, " +
+                     $"Alpha2: {bandPowerStream2?.AverageBandPower.Alpha:F2}, " +
+                     $"Avg: {avgAlpha:F2}, " +
+                     $"State: {CurrentJumpState}");
+
+            if (debugText != null)
+            {
+                debugText.text = $"Alpha1: {bandPowerStream1?.AverageBandPower.Alpha:F2}\n" +
+                                $"Alpha2: {bandPowerStream2?.AverageBandPower.Alpha:F2}\n" +
+                                $"Avg: {avgAlpha:F2}\n" +
+                                $"State: {CurrentJumpState}";
+            }
 
             // Always running when grounded
             if (CurrentJumpState == JumpState.Running)
             {
                 IsRunning = true;
                 CurrentSpeed = maxSpeed;
-                _animator.SetBool("Running", true);
+                //_animator.SetBool("Running", true);
 
                 // Check for jumps
                 UpdateJumpState(avgAlpha);
@@ -132,18 +152,29 @@ public class NetworkedOppyController : NetworkBehaviour
         }
 
         // Apply animations
-        _animator.SetBool("Running", IsRunning || CurrentJumpState == JumpState.Running);
-        _animator.SetFloat("Speed", CurrentSpeed);
+        // _animator.SetBool("Running", IsRunning || CurrentJumpState == JumpState.Running);
+        // _animator.SetFloat("Speed", CurrentSpeed);
         ApplyJumpAnimations();
 
-        if(focusStream != null && focusStream.Focus > 0.5f  )
-        {
-            _animator.SetBool("Running", true);
-        }
     }
 
     private float CalculateAverageAlpha()
     {
+        if (useTestMode)
+        {
+            // Update test alpha value at intervals
+            if (Time.time >= nextTestChangeTime)
+            {
+                testAlphaValue = Random.value;  // Random value between 0-1
+                nextTestChangeTime = Time.time + Random.Range(testMinInterval, testMaxInterval);
+                
+                // Debug log the new test value
+                Debug.Log($"Test Alpha Value: {testAlphaValue:F2}");
+            }
+            return testAlphaValue;
+        }
+
+        // Original alpha calculation
         float totalAlpha = 0f;
         int validStreams = 0;
 
@@ -166,28 +197,37 @@ public class NetworkedOppyController : NetworkBehaviour
     {
         if (CurrentJumpState == JumpState.Running)
         {
+            string jumpType = "None";
+            
             // Choose jump type based on alpha level
             if (avgAlpha >= ninjaJumpThreshold)
             {
                 CurrentJumpState = JumpState.NinjaJump;
                 _animator.SetTrigger("NinjaJump");
+                jumpType = "Ninja Jump";
             }
             else if (avgAlpha >= jump2Threshold)
             {
                 CurrentJumpState = JumpState.Jump2;
                 _animator.SetTrigger("Jump2");
+                jumpType = "Jump2";
             }
             else if (avgAlpha >= basicJumpThreshold)
             {
                 CurrentJumpState = JumpState.Jump;
                 _animator.SetTrigger("Jump");
+                jumpType = "Basic Jump";
+            }
+
+            if (jumpType != "None")
+            {
+                Debug.Log($"Triggered {jumpType} with alpha {avgAlpha:F2}");
             }
         }
         else
         {
-            // Return to running - the animator handles the transitions
             CurrentJumpState = JumpState.Running;
-            _animator.SetBool("Running", true);
+            Debug.Log("Returned to Running");
         }
     }
 

@@ -4060,9 +4060,6 @@ MonoBehaviour:
   bandPowerStream2: {fileID: 1144986248}
   focusStream: {fileID: 0}
   runThreshold: 0.1
-  jumpStartThreshold: 0.3
-  floatThreshold: 0.6
-  landThreshold: 0.3
   minSpeed: 0.3
   maxSpeed: 1
   speedMultiplier: 1
@@ -4076,6 +4073,14 @@ MonoBehaviour:
   fixedPosition: {x: 0, y: 0, z: 0}
   maintainFixedPosition: 1
   coinCountText: {fileID: 0}
+  basicJumpThreshold: 0.5
+  jump2Threshold: 0.6
+  ninjaJumpThreshold: 0.7
+  showDebugUI: 1
+  debugText: {fileID: 0}
+  useTestMode: 1
+  testMinInterval: 0.5
+  testMaxInterval: 2
 --- !u!1 &248692455
 GameObject:
   m_ObjectHideFlags: 0
@@ -8944,9 +8949,6 @@ MonoBehaviour:
   bandPowerStream2: {fileID: 1144986248}
   focusStream: {fileID: 0}
   runThreshold: 0.1
-  jumpStartThreshold: 0.3
-  floatThreshold: 0.6
-  landThreshold: 0.3
   minSpeed: 0.3
   maxSpeed: 1
   speedMultiplier: 1
@@ -8960,6 +8962,14 @@ MonoBehaviour:
   fixedPosition: {x: 0, y: 0, z: 0}
   maintainFixedPosition: 1
   coinCountText: {fileID: 0}
+  basicJumpThreshold: 0.5
+  jump2Threshold: 0.6
+  ninjaJumpThreshold: 0.7
+  showDebugUI: 1
+  debugText: {fileID: 0}
+  useTestMode: 1
+  testMinInterval: 0.5
+  testMaxInterval: 2
 --- !u!114 &599144693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17459,9 +17469,6 @@ MonoBehaviour:
   bandPowerStream2: {fileID: 1144986248}
   focusStream: {fileID: 0}
   runThreshold: 0.1
-  jumpStartThreshold: 0.3
-  floatThreshold: 0.6
-  landThreshold: 0.3
   minSpeed: 0.3
   maxSpeed: 1
   speedMultiplier: 1
@@ -17475,6 +17482,14 @@ MonoBehaviour:
   fixedPosition: {x: 0, y: 0, z: 0}
   maintainFixedPosition: 1
   coinCountText: {fileID: 0}
+  basicJumpThreshold: 0.5
+  jump2Threshold: 0.6
+  ninjaJumpThreshold: 0.7
+  showDebugUI: 1
+  debugText: {fileID: 0}
+  useTestMode: 1
+  testMinInterval: 0.5
+  testMaxInterval: 2
 --- !u!114 &1229310009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27070,7 +27085,7 @@ PrefabInstance:
     - target: {fileID: 7107983976591372239, guid: bd8120e4a733d1b4ab18fbeb92853d5a,
         type: 3}
       propertyPath: m_Name
-      value: Oppy (1)
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 7107983976591372239, guid: bd8120e4a733d1b4ab18fbeb92853d5a,
         type: 3}
@@ -27203,9 +27218,6 @@ MonoBehaviour:
   bandPowerStream2: {fileID: 1144986248}
   focusStream: {fileID: 0}
   runThreshold: 0.1
-  jumpStartThreshold: 0.3
-  floatThreshold: 0.6
-  landThreshold: 0.3
   minSpeed: 0.3
   maxSpeed: 1
   speedMultiplier: 1
@@ -27219,6 +27231,14 @@ MonoBehaviour:
   fixedPosition: {x: 0, y: 0, z: 0}
   maintainFixedPosition: 1
   coinCountText: {fileID: 0}
+  basicJumpThreshold: 0.5
+  jump2Threshold: 0.6
+  ninjaJumpThreshold: 0.7
+  showDebugUI: 1
+  debugText: {fileID: 0}
+  useTestMode: 1
+  testMinInterval: 0.5
+  testMaxInterval: 2
 --- !u!1 &2057911996
 GameObject:
   m_ObjectHideFlags: 0

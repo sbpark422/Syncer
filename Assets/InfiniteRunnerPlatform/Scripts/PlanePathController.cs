@@ -173,12 +173,7 @@ namespace Xeemu.PathAutoGen
 			oneunitySize = (pathSize.PathSizeLength / _noOfSize);
 
 			//calculating width section of path 
-			//its calculating the cenrter of each section.
 			var pathWidthSection = ((pathSize.PathSizeWidth / 3)/2);
-
-			//scaling the player accoprding to pathWidthSection
-			var localscale = player.transform.localScale;
-			player.transform.localScale = new Vector3 (pathWidthSection,pathWidthSection,pathWidthSection);
 
 			//assiging value to private variable for inner manupulation
 			rarePathValue = rareTileRepeatInterval;

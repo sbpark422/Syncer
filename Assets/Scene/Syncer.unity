@@ -12820,7 +12820,7 @@ MonoBehaviour:
   rareTile: {fileID: 111330, guid: 3e2fa0b7b4f87460192dd3baa0c94ad1, type: 3}
   coins: {fileID: 107180, guid: 6f9baccb931ad4c8e9cb6be44a3c897a, type: 3}
   tileLength: 60
-  tileWidth: 3
+  tileWidth: 0.3
   pathController:
     numberOfCoins: 10
     platformSpeed: 30
@@ -16200,15 +16200,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 476904639, guid: f146375a86a348e419cd724da2a86d2b, type: 3}
       propertyPath: m_LocalScale.x
-      value: 2
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 476904639, guid: f146375a86a348e419cd724da2a86d2b, type: 3}
       propertyPath: m_LocalScale.y
-      value: 2
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 476904639, guid: f146375a86a348e419cd724da2a86d2b, type: 3}
       propertyPath: m_LocalScale.z
-      value: 2
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 476904639, guid: f146375a86a348e419cd724da2a86d2b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -16216,7 +16216,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 476904639, guid: f146375a86a348e419cd724da2a86d2b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.2
+      value: 0.48
       objectReference: {fileID: 0}
     - target: {fileID: 476904639, guid: f146375a86a348e419cd724da2a86d2b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -19777,7 +19777,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1499439607
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 using UnityEngine;
 using Fusion;
 using OpenBCI.Network.Streams;
+using UnityEngine.UI;
 
 public class NetworkedOppyController : NetworkBehaviour
 {
@@ -38,6 +39,9 @@ public class NetworkedOppyController : NetworkBehaviour
     [SerializeField] private Vector3 fixedPosition = new Vector3(0, 3f, 0);  // Raised Y position
     [SerializeField] private bool maintainFixedPosition = true;
 
+    [Header("Coin Collection")]
+    [SerializeField] private Text coinCountText;  // UI Text to display coins
+
     // Animation States
     private enum JumpState
     {
@@ -63,6 +67,9 @@ public class NetworkedOppyController : NetworkBehaviour
     private bool _runningForward = true;
     private float _distanceTraveled = 0f;
 
+    [Networked] 
+    private int CoinCount { get; set; }  // Networked coin counter
+
     private void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -87,6 +94,7 @@ public class NetworkedOppyController : NetworkBehaviour
             CurrentJumpState = JumpState.Grounded;
             IsRunning = false;
             CurrentSpeed = 0f;
+            CoinCount = 0;
         }
         
         // Set initial animation state and position
@@ -97,6 +105,9 @@ public class NetworkedOppyController : NetworkBehaviour
             // Position Oppy above ground
             transform.position = fixedPosition;
         }
+
+        // Initialize UI
+        UpdateCoinUI();
     }
 
     public override void FixedUpdateNetwork()
@@ -230,6 +241,38 @@ public class NetworkedOppyController : NetworkBehaviour
             case JumpState.Landing:
                 _animator.SetTrigger("Landed");
                 break;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!Object.HasStateAuthority) return;  // Only server handles collisions
+
+        if (other.CompareTag("Coin"))
+        {
+            // Increment networked coin count
+            CoinCount++;
+            
+            // Update UI
+            UpdateCoinUI();
+
+            // Destroy the coin through the network
+            if (other.GetComponent<NetworkObject>())
+            {
+                Runner.Despawn(other.GetComponent<NetworkObject>());
+            }
+            else
+            {
+                Debug.LogWarning("Coin needs NetworkObject component!");
+            }
+        }
+    }
+
+    private void UpdateCoinUI()
+    {
+        if (coinCountText != null)
+        {
+            coinCountText.text = $"Coins: {CoinCount}";
         }
     }
 } 

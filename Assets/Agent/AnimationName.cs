@@ -17,11 +17,11 @@ public class AnimationName : MonoBehaviour
     void Update()
     {
         //Fetch the current Animation clip information for the base layer
-        AnimatorClipInfo[] clipInfo = this.animator.GetCurrentAnimatorClipInfo(0);
+        // AnimatorClipInfo[] clipInfo = this.animator.GetCurrentAnimatorClipInfo(0);
 
-        //Access the Animation clip name
-        string clipName = clipInfo[0].clip.name;
+        // //Access the Animation clip name
+        // string clipName = clipInfo[0].clip.name;
 
-        animName.text = clipName;
+        // animName.text = clipName;
     }
 }

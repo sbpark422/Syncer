@@ -2,43 +2,20 @@ using UnityEngine;
 using Fusion;
 using OpenBCI.Network.Streams;
 using UnityEngine.UI;
+using System.Collections;
 
 public class NetworkedOppyController : NetworkBehaviour
 {
     private Animator _animator;
-    private CharacterController _characterController;
+    [SerializeField] private OppyLightGlow _oppyLightGlow;
 
     [Header("Brain Data")]
     [SerializeField] private AverageBandPowerStream bandPowerStream1;
     [SerializeField] private AverageBandPowerStream bandPowerStream2;
-    [SerializeField] private FocusStream focusStream;
-
-    [Header("Thresholds")]
-    [SerializeField] private float runThreshold = 0.3f;      // Start running at this alpha
-
-    [Header("Speed Settings")]
-    [SerializeField] private float minSpeed = 0.3f;  // Minimum animation speed
-    [SerializeField] private float maxSpeed = 1.0f;  // Maximum animation speed
-    [SerializeField] private float speedMultiplier = 1.0f;  // Overall speed multiplier
-    [SerializeField] private float speedSmoothTime = 0.1f;  // Time to reach target speed
-
-    [Header("Auto Running")]
-    [SerializeField] private float runDistance = 5f;     // Distance to run in each direction
-    [SerializeField] private float runSpeed = 2f;        // Movement speed
-    [SerializeField] private Vector3 runDirection = Vector3.forward;  // Direction to run
-
-    [Header("Treadmill Effect")]
-    [SerializeField] private Transform[] groundPlanes;  // Array of ground planes (usually 2)
-    [SerializeField] private float groundScrollSpeed = 2f;
-    [SerializeField] private float groundLength = 10f;  // Length of each ground plane
 
     [Header("Position")]
     [SerializeField] private Vector3 fixedPosition = new Vector3(0, 3f, 0);  // Raised Y position
     [SerializeField] private bool maintainFixedPosition = true;
-
-    [Header("Coin Collection")]
-    [SerializeField] private Text coinCountText;
-    private int coinCount = 0;  // Changed to regular int instead of networked
 
     [Header("Jump Thresholds")]
     [SerializeField] private float basicJumpThreshold = 0.5f;    // For Jump
@@ -48,7 +25,7 @@ public class NetworkedOppyController : NetworkBehaviour
     // Add debug UI elements
     [Header("Debug")]
     [SerializeField] private bool showDebugUI = true;
-    [SerializeField] private Text debugText; // Optional UI Text component
+    [SerializeField] private Text debugText;
 
     // Add testing mode
     [Header("Testing")]
@@ -69,51 +46,29 @@ public class NetworkedOppyController : NetworkBehaviour
 
     [Networked] 
     private JumpState CurrentJumpState { get; set; }
-    
-    [Networked]
-    private NetworkBool IsRunning { get; set; }
-
-    [Networked] 
-    private float CurrentSpeed { get; set; }  // Changed from NetworkFloat to float
 
     private void Awake()
     {
         _animator = GetComponent<Animator>();
-        _characterController = GetComponent<CharacterController>();
-    }
-
-    private void Start()
-    {
     }
 
     public override void Spawned()
     {
-        // Initialize networked properties after spawning
         if (Object.HasStateAuthority)
         {
             CurrentJumpState = JumpState.Running;
-            IsRunning = false;
-            CurrentSpeed = 0f;
         }
-        
-        // Set initial animation state and position
-        //_animator.SetBool("Running", false);
         
         if (maintainFixedPosition)
         {
             transform.position = fixedPosition;
         }
-
-        // Initialize UI
-        coinCount = 0;  // Reset local counter
-        UpdateCoinUI();
     }
 
     public override void FixedUpdateNetwork()
     {
         if (Object.HasStateAuthority)
         {
-            // Ensure Oppy stays in position
             if (maintainFixedPosition)
             {
                 transform.position = fixedPosition;
@@ -135,46 +90,23 @@ public class NetworkedOppyController : NetworkBehaviour
                                 $"State: {CurrentJumpState}";
             }
 
-            // Always running when grounded
-            if (CurrentJumpState == JumpState.Running)
-            {
-                IsRunning = true;
-                CurrentSpeed = maxSpeed;
-                //_animator.SetBool("Running", true);
-
-                // Check for jumps
-                UpdateJumpState(avgAlpha);
-            }
-            else
-            {
-                UpdateJumpState(avgAlpha);
-            }
+            UpdateJumpState(avgAlpha);
         }
-
-        // Apply animations
-        // _animator.SetBool("Running", IsRunning || CurrentJumpState == JumpState.Running);
-        // _animator.SetFloat("Speed", CurrentSpeed);
-        ApplyJumpAnimations();
-
     }
 
     private float CalculateAverageAlpha()
     {
         if (useTestMode)
         {
-            // Update test alpha value at intervals
             if (Time.time >= nextTestChangeTime)
             {
-                testAlphaValue = Random.value;  // Random value between 0-1
+                testAlphaValue = Random.value;
                 nextTestChangeTime = Time.time + Random.Range(testMinInterval, testMaxInterval);
-                
-                // Debug log the new test value
                 Debug.Log($"Test Alpha Value: {testAlphaValue:F2}");
             }
             return testAlphaValue;
         }
 
-        // Original alpha calculation
         float totalAlpha = 0f;
         int validStreams = 0;
 
@@ -199,7 +131,6 @@ public class NetworkedOppyController : NetworkBehaviour
         {
             string jumpType = "None";
             
-            // Choose jump type based on alpha level
             if (avgAlpha >= ninjaJumpThreshold)
             {
                 CurrentJumpState = JumpState.NinjaJump;
@@ -231,31 +162,25 @@ public class NetworkedOppyController : NetworkBehaviour
         }
     }
 
-    private void ApplyJumpAnimations()
-    {
-        // This can be removed if we're handling all animations in UpdateJumpState
-    }
-
     private void OnTriggerEnter(Collider other)
     {
-        if (other != null && other.CompareTag("Coins"))
+        if (other.CompareTag("Obstacle"))
         {
-            // Use local counter instead of networked
-            coinCount++;
-            
-            // Update UI
-            UpdateCoinUI();
-
-            // Simply destroy the coin
-            Destroy(other.gameObject);
+            // Flash red and play failure sound
+            if (_oppyLightGlow != null)
+            {
+                _oppyLightGlow.SetRed(true);
+                StartCoroutine(ResetGlow());
+            }
         }
     }
 
-    private void UpdateCoinUI()
+    private IEnumerator ResetGlow()
     {
-        if (coinCountText != null)
+        yield return new WaitForSeconds(0.5f);  // Flash duration
+        if (_oppyLightGlow != null)
         {
-            coinCountText.text = $"Coins: {coinCount}";
+            _oppyLightGlow.SetRed(false);
         }
     }
 } 

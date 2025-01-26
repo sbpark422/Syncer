@@ -15,9 +15,6 @@ public class NetworkedOppyController : NetworkBehaviour
 
     [Header("Thresholds")]
     [SerializeField] private float runThreshold = 0.3f;      // Start running at this alpha
-    [SerializeField] private float jumpStartThreshold = 0.7f; // Start jumping at this alpha
-    [SerializeField] private float floatThreshold = 0.5f;    
-    [SerializeField] private float landThreshold = 0.3f;     
 
     [Header("Speed Settings")]
     [SerializeField] private float minSpeed = 0.3f;  // Minimum animation speed
@@ -40,15 +37,21 @@ public class NetworkedOppyController : NetworkBehaviour
     [SerializeField] private bool maintainFixedPosition = true;
 
     [Header("Coin Collection")]
-    [SerializeField] private Text coinCountText;  // UI Text to display coins
+    [SerializeField] private Text coinCountText;
+    private int coinCount = 0;  // Changed to regular int instead of networked
 
-    // Animation States
+    [Header("Jump Thresholds")]
+    [SerializeField] private float basicJumpThreshold = 0.5f;    // For Jump
+    [SerializeField] private float jump2Threshold = 0.6f;        // For Jump2
+    [SerializeField] private float ninjaJumpThreshold = 0.7f;    // For Ninja Jump
+
+    // States matching animator
     private enum JumpState
     {
-        Grounded,
-        JumpStarted,
-        Floating,
-        Landing
+        Running,    // Uses Run state (1102932609354020624)
+        Jump,       // Uses Jump state (1102428337391504520)
+        Jump2,      // Uses Jump2 state (1102953793907963858)
+        NinjaJump   // Uses Ninja Jump state (1102850672355722210)
     }
 
     [Networked] 
@@ -67,9 +70,6 @@ public class NetworkedOppyController : NetworkBehaviour
     private bool _runningForward = true;
     private float _distanceTraveled = 0f;
 
-    [Networked] 
-    private int CoinCount { get; set; }  // Networked coin counter
-
     private void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -78,12 +78,6 @@ public class NetworkedOppyController : NetworkBehaviour
 
     private void Start()
     {
-        // Arrange ground planes initially
-        if (groundPlanes != null && groundPlanes.Length >= 2)
-        {
-            // Position second ground plane right after the first one
-            groundPlanes[1].position = groundPlanes[0].position + Vector3.forward * groundLength;
-        }
     }
 
     public override void Spawned()
@@ -91,10 +85,9 @@ public class NetworkedOppyController : NetworkBehaviour
         // Initialize networked properties after spawning
         if (Object.HasStateAuthority)
         {
-            CurrentJumpState = JumpState.Grounded;
+            CurrentJumpState = JumpState.Running;
             IsRunning = false;
             CurrentSpeed = 0f;
-            CoinCount = 0;
         }
         
         // Set initial animation state and position
@@ -102,11 +95,11 @@ public class NetworkedOppyController : NetworkBehaviour
         
         if (maintainFixedPosition)
         {
-            // Position Oppy above ground
             transform.position = fixedPosition;
         }
 
         // Initialize UI
+        coinCount = 0;  // Reset local counter
         UpdateCoinUI();
     }
 
@@ -122,39 +115,15 @@ public class NetworkedOppyController : NetworkBehaviour
 
             float avgAlpha = CalculateAverageAlpha();
 
-            // Scroll and loop ground planes
-            if (groundPlanes != null && groundPlanes.Length >= 2)
-            {
-                // Move both grounds
-                foreach (Transform ground in groundPlanes)
-                {
-                    ground.position += Vector3.back * groundScrollSpeed * Runner.DeltaTime;
-                }
-
-                // Check if first ground needs to loop
-                if (groundPlanes[0].position.z <= -groundLength)
-                {
-                    groundPlanes[0].position = groundPlanes[1].position + Vector3.forward * groundLength;
-                }
-
-                // Check if second ground needs to loop
-                if (groundPlanes[1].position.z <= -groundLength)
-                {
-                    groundPlanes[1].position = groundPlanes[0].position + Vector3.forward * groundLength;
-                }
-            }
-
-            // Keep running animation going
-            if (CurrentJumpState == JumpState.Grounded)
+            // Always running when grounded
+            if (CurrentJumpState == JumpState.Running)
             {
                 IsRunning = true;
                 CurrentSpeed = maxSpeed;
+                _animator.SetBool("Running", true);
 
-                // Jump logic remains the same
-                if (avgAlpha >= jumpStartThreshold)
-                {
-                    CurrentJumpState = JumpState.JumpStarted;
-                }
+                // Check for jumps
+                UpdateJumpState(avgAlpha);
             }
             else
             {
@@ -163,7 +132,7 @@ public class NetworkedOppyController : NetworkBehaviour
         }
 
         // Apply animations
-        _animator.SetBool("Running", IsRunning || CurrentJumpState == JumpState.Grounded);
+        _animator.SetBool("Running", IsRunning || CurrentJumpState == JumpState.Running);
         _animator.SetFloat("Speed", CurrentSpeed);
         ApplyJumpAnimations();
 
@@ -195,76 +164,50 @@ public class NetworkedOppyController : NetworkBehaviour
 
     private void UpdateJumpState(float avgAlpha)
     {
-        switch (CurrentJumpState)
+        if (CurrentJumpState == JumpState.Running)
         {
-            case JumpState.Grounded:
-                if (avgAlpha >= jumpStartThreshold)
-                {
-                    CurrentJumpState = JumpState.JumpStarted;
-                }
-                break;
-
-            case JumpState.JumpStarted:
-                if (avgAlpha >= floatThreshold)
-                {
-                    CurrentJumpState = JumpState.Floating;
-                }
-                else if (avgAlpha <= landThreshold)
-                {
-                    CurrentJumpState = JumpState.Landing;
-                }
-                break;
-
-            case JumpState.Floating:
-                if (avgAlpha <= landThreshold)
-                {
-                    CurrentJumpState = JumpState.Landing;
-                }
-                break;
-
-            case JumpState.Landing:
-                CurrentJumpState = JumpState.Grounded;
-                break;
+            // Choose jump type based on alpha level
+            if (avgAlpha >= ninjaJumpThreshold)
+            {
+                CurrentJumpState = JumpState.NinjaJump;
+                _animator.SetTrigger("NinjaJump");
+            }
+            else if (avgAlpha >= jump2Threshold)
+            {
+                CurrentJumpState = JumpState.Jump2;
+                _animator.SetTrigger("Jump2");
+            }
+            else if (avgAlpha >= basicJumpThreshold)
+            {
+                CurrentJumpState = JumpState.Jump;
+                _animator.SetTrigger("Jump");
+            }
+        }
+        else
+        {
+            // Return to running - the animator handles the transitions
+            CurrentJumpState = JumpState.Running;
+            _animator.SetBool("Running", true);
         }
     }
 
     private void ApplyJumpAnimations()
     {
-        switch (CurrentJumpState)
-        {
-            case JumpState.JumpStarted:
-                _animator.SetTrigger("Jumping");
-                break;
-            case JumpState.Floating:
-                _animator.SetTrigger("JumpIdle");
-                break;
-            case JumpState.Landing:
-                _animator.SetTrigger("Landed");
-                break;
-        }
+        // This can be removed if we're handling all animations in UpdateJumpState
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!Object.HasStateAuthority) return;  // Only server handles collisions
-
-        if (other.CompareTag("Coin"))
+        if (other != null && other.CompareTag("Coins"))
         {
-            // Increment networked coin count
-            CoinCount++;
+            // Use local counter instead of networked
+            coinCount++;
             
             // Update UI
             UpdateCoinUI();
 
-            // Destroy the coin through the network
-            if (other.GetComponent<NetworkObject>())
-            {
-                Runner.Despawn(other.GetComponent<NetworkObject>());
-            }
-            else
-            {
-                Debug.LogWarning("Coin needs NetworkObject component!");
-            }
+            // Simply destroy the coin
+            Destroy(other.gameObject);
         }
     }
 
@@ -272,7 +215,7 @@ public class NetworkedOppyController : NetworkBehaviour
     {
         if (coinCountText != null)
         {
-            coinCountText.text = $"Coins: {CoinCount}";
+            coinCountText.text = $"Coins: {coinCount}";
         }
     }
 } 

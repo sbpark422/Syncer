@@ -45,7 +45,7 @@ namespace Xeemu.PathAutoGen
 		int rarePathCount=0;
 
 		//Help to adjust the height of coins while using the Curved type .
-		float maxCoinHeight=3.5f; 
+		float maxCoinHeight=1.5f; 
 
 		//Start: Private variable using to calculate which path is going to generate  , Moving in Fixed Update
 		int rarePathValue=0;
@@ -128,22 +128,21 @@ namespace Xeemu.PathAutoGen
 				throw new Exception ("Maximum 5 paths or minimum 2 paths are allowed or For more than 5 paths need to develop logical code for further funcionality");
 			}
 
+			// Set global coin quantity first
+			pathController.numberOfCoins = NOOFCOINS._10;  // Can be _5, _10, _15, etc.
 
-
-			for (int i = 0; i < pathCount; i++) {
-//				//var item = pathController.tilesQuantity [i];
-//				pathController.tilesQuantity [i].coinController.coinsAlignment = COINALIGNMENT.RANDOM;
-//				pathController.tilesQuantity [i].coinController.coinsPath = COINPATH.RANDOM;
-//				pathController.tilesQuantity [i].coinController.coinsSpawn = COINSPAWN.YES;
-//
-//				pathController.tilesQuantity [i].obstacleController.obstacleQuantity = 1;
-//				pathController.tilesQuantity [i].obstacleController.obstacleTypes = OBSTACLETYPE.RANDOM;
+			// Configure coin spawning for each path tile
+			for (int i = 0; i < pathController.tilesQuantity.Count; i++) 
+			{
+				var tile = pathController.tilesQuantity[i];
 				
+				// Coin spawn settings
+				tile.coinController.coinsSpawn = COINSPAWN.YES;
+				
+				// Coin placement pattern
+				tile.coinController.coinsAlignment = COINALIGNMENT.RANDOM;  // or LINE, ZIGZAG
+				tile.coinController.coinsPath = COINPATH.RANDOM;  // or STRAIGHT, CURVE
 			}
-
-
-			//check noof coins value 
-			pathController.numberOfCoins=pathController.numberOfCoins == 0 ? NOOFCOINS._10:pathController.numberOfCoins;
 
 			//Getting path speed.
 			speed = pathController.platformSpeed==0?10f:pathController.platformSpeed;

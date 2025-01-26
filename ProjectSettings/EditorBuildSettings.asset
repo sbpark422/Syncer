@@ -20,9 +20,12 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scene/Simulation.unity
     guid: 3b362228001214a64b1ec551fa849d1e
-  - enabled: 1
+  - enabled: 0
     path: Assets/Samples/Meta MR Utility Kit/71.0.0/Passthrough Relighting/PassthroughRelighting.unity
     guid: 36246cc1dd7f015428dc705da9e4497e
+  - enabled: 1
+    path: Assets/Scene/Syncer.unity
+    guid: 47f92f42f86c74793899d67b3fe67965
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 2a92d7d1b9e254b2398812013a455fac,
       type: 2}

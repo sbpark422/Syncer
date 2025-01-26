@@ -24,6 +24,20 @@ public class NetworkedOppyController : NetworkBehaviour
     [SerializeField] private float speedMultiplier = 1.0f;  // Overall speed multiplier
     [SerializeField] private float speedSmoothTime = 0.1f;  // Time to reach target speed
 
+    [Header("Auto Running")]
+    [SerializeField] private float runDistance = 5f;     // Distance to run in each direction
+    [SerializeField] private float runSpeed = 2f;        // Movement speed
+    [SerializeField] private Vector3 runDirection = Vector3.forward;  // Direction to run
+
+    [Header("Treadmill Effect")]
+    [SerializeField] private Transform[] groundPlanes;  // Array of ground planes (usually 2)
+    [SerializeField] private float groundScrollSpeed = 2f;
+    [SerializeField] private float groundLength = 10f;  // Length of each ground plane
+
+    [Header("Position")]
+    [SerializeField] private Vector3 fixedPosition = new Vector3(0, 3f, 0);  // Raised Y position
+    [SerializeField] private bool maintainFixedPosition = true;
+
     // Animation States
     private enum JumpState
     {
@@ -45,10 +59,24 @@ public class NetworkedOppyController : NetworkBehaviour
     private float _currentVelocity;  // Used for smoothing
     private float _targetSpeed;      // Speed we're moving towards
 
+    private Vector3 _startPosition;
+    private bool _runningForward = true;
+    private float _distanceTraveled = 0f;
+
     private void Awake()
     {
         _animator = GetComponent<Animator>();
         _characterController = GetComponent<CharacterController>();
+    }
+
+    private void Start()
+    {
+        // Arrange ground planes initially
+        if (groundPlanes != null && groundPlanes.Length >= 2)
+        {
+            // Position second ground plane right after the first one
+            groundPlanes[1].position = groundPlanes[0].position + Vector3.forward * groundLength;
+        }
     }
 
     public override void Spawned()
@@ -61,63 +89,75 @@ public class NetworkedOppyController : NetworkBehaviour
             CurrentSpeed = 0f;
         }
         
-        // Set initial animation state
+        // Set initial animation state and position
         _animator.SetBool("Running", false);
+        
+        if (maintainFixedPosition)
+        {
+            // Position Oppy above ground
+            transform.position = fixedPosition;
+        }
     }
 
     public override void FixedUpdateNetwork()
     {
-        // if (Object.HasStateAuthority)
-        // {
-        //     float avgAlpha = CalculateAverageAlpha();
-            
-        //     // Handle running state
-        //     if (CurrentJumpState == JumpState.Grounded)
-        //     {
-        //         // Run if alpha is above runThreshold but below jumpThreshold
-        //         IsRunning = avgAlpha >= runThreshold && avgAlpha < jumpStartThreshold;
-                
-        //         if (IsRunning)
-        //         {
-        //             // Calculate target speed based on alpha
-        //             float normalizedAlpha = Mathf.InverseLerp(runThreshold, jumpStartThreshold, avgAlpha);
-        //             _targetSpeed = Mathf.Lerp(minSpeed, maxSpeed, normalizedAlpha) * speedMultiplier;
-                    
-        //             // Smoothly transition to target speed
-        //             CurrentSpeed = Mathf.SmoothDamp(
-        //                 current: CurrentSpeed,
-        //                 target: _targetSpeed,
-        //                 currentVelocity: ref _currentVelocity,
-        //                 smoothTime: speedSmoothTime
-        //             );
-                    
-        //             Debug.Log($"Target Speed: {_targetSpeed}, Current Speed: {CurrentSpeed}");
-        //         }
-                
-        //         if (avgAlpha >= jumpStartThreshold)
-        //         {
-        //             IsRunning = false;
-        //             CurrentJumpState = JumpState.JumpStarted;
-        //             Debug.Log($"Jump Started! Alpha: {avgAlpha}");
-        //         }
-        //     }
-        //     else
-        //     {
-        //         UpdateJumpState(avgAlpha);
-        //     }
-        // }
-
-        // // Apply animations
-        // _animator.SetBool("Running", IsRunning);
-        // if (IsRunning)
-        // {
-        //     _animator.SetFloat("Speed", CurrentSpeed);  // Update animation speed
-        // }
-        // ApplyJumpAnimations();
-
-        if(focusStream != null && focusStream.Focus > 0.5f)
+        if (Object.HasStateAuthority)
         {
-            Debug.Log($"Focus: {focusStream.Focus}");
+            // Ensure Oppy stays in position
+            if (maintainFixedPosition)
+            {
+                transform.position = fixedPosition;
+            }
+
+            float avgAlpha = CalculateAverageAlpha();
+
+            // Scroll and loop ground planes
+            if (groundPlanes != null && groundPlanes.Length >= 2)
+            {
+                // Move both grounds
+                foreach (Transform ground in groundPlanes)
+                {
+                    ground.position += Vector3.back * groundScrollSpeed * Runner.DeltaTime;
+                }
+
+                // Check if first ground needs to loop
+                if (groundPlanes[0].position.z <= -groundLength)
+                {
+                    groundPlanes[0].position = groundPlanes[1].position + Vector3.forward * groundLength;
+                }
+
+                // Check if second ground needs to loop
+                if (groundPlanes[1].position.z <= -groundLength)
+                {
+                    groundPlanes[1].position = groundPlanes[0].position + Vector3.forward * groundLength;
+                }
+            }
+
+            // Keep running animation going
+            if (CurrentJumpState == JumpState.Grounded)
+            {
+                IsRunning = true;
+                CurrentSpeed = maxSpeed;
+
+                // Jump logic remains the same
+                if (avgAlpha >= jumpStartThreshold)
+                {
+                    CurrentJumpState = JumpState.JumpStarted;
+                }
+            }
+            else
+            {
+                UpdateJumpState(avgAlpha);
+            }
+        }
+
+        // Apply animations
+        _animator.SetBool("Running", IsRunning || CurrentJumpState == JumpState.Grounded);
+        _animator.SetFloat("Speed", CurrentSpeed);
+        ApplyJumpAnimations();
+
+        if(focusStream != null && focusStream.Focus > 0.5f  )
+        {
             _animator.SetBool("Running", true);
         }
     }
@@ -150,7 +190,6 @@ public class NetworkedOppyController : NetworkBehaviour
                 if (avgAlpha >= jumpStartThreshold)
                 {
                     CurrentJumpState = JumpState.JumpStarted;
-                    Debug.Log($"Jump Started! Alpha: {avgAlpha}");
                 }
                 break;
 
@@ -158,7 +197,6 @@ public class NetworkedOppyController : NetworkBehaviour
                 if (avgAlpha >= floatThreshold)
                 {
                     CurrentJumpState = JumpState.Floating;
-                    Debug.Log($"Floating! Alpha: {avgAlpha}");
                 }
                 else if (avgAlpha <= landThreshold)
                 {
@@ -170,7 +208,6 @@ public class NetworkedOppyController : NetworkBehaviour
                 if (avgAlpha <= landThreshold)
                 {
                     CurrentJumpState = JumpState.Landing;
-                    Debug.Log($"Landing! Alpha: {avgAlpha}");
                 }
                 break;
 

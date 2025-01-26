@@ -79,10 +79,11 @@ public class OppyCharacterController : MonoBehaviour
 
     void Update()
     {
-        GetLocomotionInput();
-        HandleLocomotion();
-        HandleJumping();
-        ApplyMotion();
+        _animator.SetBool("Running", true);
+        // GetLocomotionInput();
+        // HandleLocomotion();
+        // HandleJumping();
+        // ApplyMotion();
     }
 
     public void Respawn()

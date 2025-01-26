@@ -21,8 +21,13 @@ public class WebSocketManager : MonoBehaviour
         }
     }
 
+    [SerializeField] 
+    private string serverIP = "172.20.10.3";
+    [SerializeField] 
+    private int serverPort = 8765;
+    
+    private string WebSocketURL => $"ws://{serverIP}:{serverPort}";
     private WebSocket _websocket;
-    private readonly string _websocketUrl = "ws://localhost:8765";
     public bool IsConnected => _websocket?.State == WebSocketState.Open;
 
     // Add message type constants
@@ -112,7 +117,7 @@ public class WebSocketManager : MonoBehaviour
 
     public async Task ConnectToServer()
     {
-        _websocket = new WebSocket(_websocketUrl);
+        _websocket = new WebSocket(WebSocketURL);
 
         _websocket.OnOpen += () =>
         {

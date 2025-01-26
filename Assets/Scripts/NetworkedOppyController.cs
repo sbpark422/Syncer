@@ -51,6 +51,12 @@ public class NetworkedOppyController : NetworkBehaviour
     [SerializeField] private Text coinCountText;
     private int coinCount = 0;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip hitSound;    // 장애물 충돌 소리
+    [SerializeField] private AudioClip coinSound;   // 코인 획득 소리
+    [SerializeField] private AudioClip jumpSound;   // 점프 소리
+
     private void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -154,6 +160,12 @@ public class NetworkedOppyController : NetworkBehaviour
                 jumpType = "Basic Jump";
             }
 
+            // 점프 소리 재생
+            // if (audioSource != null && jumpSound != null)
+            // {
+            //     audioSource.PlayOneShot(jumpSound);
+            // }
+
             if (jumpType != "None")
             {
                 Debug.Log($"Triggered {jumpType} with alpha {avgAlpha:F2}");
@@ -179,6 +191,12 @@ public class NetworkedOppyController : NetworkBehaviour
                 coinCountText.text = $"Coins: {coinCount}";
             }
 
+            // 코인 획득 소리 재생
+            if (audioSource != null && coinSound != null)
+            {
+                audioSource.PlayOneShot(coinSound);
+            }
+
             // // Optional: Flash green on coin collection
             // if (_oppyLightGlow != null)
             // {
@@ -189,14 +207,73 @@ public class NetworkedOppyController : NetworkBehaviour
             // Destroy the collected coin
             Destroy(other.gameObject);
         }
+        else if (other.CompareTag("Obstacle"))
+        {
+            if (audioSource != null && hitSound != null)
+            {
+                audioSource.PlayOneShot(hitSound);
+            }
+        }
     }
 
-    // private IEnumerator ResetGlow()
-    // {
-    //     yield return new WaitForSeconds(0.2f);  // Short flash duration
-    //     if (_oppyLightGlow != null)
-    //     {
-    //         _oppyLightGlow.SetGlowActive(false);
-    //     }
-    // }
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (hit.gameObject.CompareTag("Obstacle"))
+        {
+            // 충돌 소리 재생
+            if (audioSource != null && hitSound != null)
+            {
+                audioSource.PlayOneShot(hitSound);
+            }
+            
+            // 1. 게임오버 또는 체력 감소
+            //HandleObstacleCollision();
+            
+            // 2. 캐릭터 리액션 (선택적)
+            // PlayHitAnimation();
+            
+            // // 3. 시각/청각 효과
+            // if (_oppyLightGlow != null)
+            // {
+            //     _oppyLightGlow.SetGlowActive(true);
+            //     StartCoroutine(ResetGlow());
+            // }
+        }
+    }
+
+    private void HandleObstacleCollision()
+    {
+        // 여러 옵션:
+        // 1. 즉시 게임오버
+        // GameOver();
+        
+        // 2. 체력 시스템
+        // health--;
+        // if (health <= 0) GameOver();
+        
+        // 3. 일시적 무적 + 계속 진행
+        StartCoroutine(TemporaryInvincibility());
+    }
+
+    private IEnumerator ResetGlow()
+    {
+        yield return new WaitForSeconds(0.2f);  // Short flash duration
+        if (_oppyLightGlow != null)
+        {
+            _oppyLightGlow.SetGlowActive(false);
+        }
+    }
+
+    private IEnumerator TemporaryInvincibility()
+    {
+        // Implement temporary invincibility logic here
+        yield return new WaitForSeconds(2f);  // Temporary invincibility duration
+        // Remove invincibility effects here
+    }
+
+    private void PlayHitAnimation()
+    {
+        // Implement hit animation logic here
+        _animator.SetTrigger("Hit");
+    }
 } 

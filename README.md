@@ -22,6 +22,8 @@ OpenGalea/
 ├── .idea/                     # IDE configuration files (excluded from version control)
 ├── .vscode/                   # VSCode settings (excluded from version control)
 ├── Assets/                    # Resources and scenes for the project
+├── Assets/Scene               # Unity Main Scene for our project
+/Syncer.unity
 ├── OpenBCI_LSL-master/        # Machine learning and biosignal integration codes
 ├── Packages/                  # Simulation-related files and dependencies
 ├── ProjectSettings/           # Unity project settings

@@ -12815,12 +12815,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ae6a6bba55804acfb1c18051075b878, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 599144685}
+  player: {fileID: 1691878185}
   rareTileRepeatInterval: 2
   rareTile: {fileID: 111330, guid: 3e2fa0b7b4f87460192dd3baa0c94ad1, type: 3}
   coins: {fileID: 107180, guid: 6f9baccb931ad4c8e9cb6be44a3c897a, type: 3}
   tileLength: 60
-  tileWidth: 6
+  tileWidth: 3
   pathController:
     numberOfCoins: 10
     platformSpeed: 30
@@ -14793,6 +14793,11 @@ PrefabInstance:
       propertyPath: Port
       value: 13348
       objectReference: {fileID: 0}
+    - target: {fileID: 5869979141856233392, guid: b9a2ede5d7cf2974f8897f802d45e482,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6124540280644219905, guid: b9a2ede5d7cf2974f8897f802d45e482,
         type: 3}
       propertyPath: m_Name
@@ -15317,6 +15322,11 @@ PrefabInstance:
     - target: {fileID: 2621056743235898462, guid: b9a2ede5d7cf2974f8897f802d45e482,
         type: 3}
       propertyPath: AverageBandPower.Alpha
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5869979141856233392, guid: b9a2ede5d7cf2974f8897f802d45e482,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6124540280644219905, guid: b9a2ede5d7cf2974f8897f802d45e482,
@@ -16189,12 +16199,24 @@ PrefabInstance:
       value: Agent
       objectReference: {fileID: 0}
     - target: {fileID: 476904639, guid: f146375a86a348e419cd724da2a86d2b, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 476904639, guid: f146375a86a348e419cd724da2a86d2b, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 476904639, guid: f146375a86a348e419cd724da2a86d2b, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 476904639, guid: f146375a86a348e419cd724da2a86d2b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 476904639, guid: f146375a86a348e419cd724da2a86d2b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 476904639, guid: f146375a86a348e419cd724da2a86d2b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -19859,7 +19881,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &1506187461
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -19941,7 +19963,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.168, y: 1.2, z: 0.3}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -22086,7 +22108,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1229310006}

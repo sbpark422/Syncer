@@ -4,43 +4,57 @@ using OpenBCI.Network.Streams;
 
 public class NetworkedAlphaPillar : NetworkBehaviour
 {
-    public GameObject alphaPillar;  // Reference to the visual pillar object
+    public enum PillarMode
+    {
+        Alpha,
+        Beta,
+        Focus
+    }
 
-    public GameObject betaPillar;  // Reference to the visual pillar object
-    public GameObject focusPillar;  // Reference to the visual pillar object
-    [SerializeField] private AverageBandPowerStream Stream;
+    public GameObject pillar;  // Reference to the visual pillar object
+    
+    [SerializeField] private AverageBandPowerStream bandPowerStream;
+    [SerializeField] private FocusStream focusStream;
+    
+    [SerializeField] private PillarMode mode = PillarMode.Alpha;  // Dropdown in inspector
 
-   [SerializeField] private FocusStream focusStream;
     [Networked]
-    private float NetworkedAlphaPillarHeight { get; set; }
-
-    [Networked]
-    private float NetworkedBetaPillarHeight { get; set; }
-
-    [Networked]
-    private float NetworkedFocusPillarHeight { get; set; }
-
-
+    private float NetworkedPillarHeight { get; set; }
 
     public override void FixedUpdateNetwork()
     {
-        // Only the StateAuthority should update the height
         if (Object.HasStateAuthority)
         {
-            // Update networked height from stream
-            NetworkedAlphaPillarHeight = Stream.AverageBandPower.Alpha;
-            NetworkedBetaPillarHeight = Stream.AverageBandPower.Beta;
-            NetworkedFocusPillarHeight = focusStream.Focus;
+            // Update height based on selected mode
+            switch (mode)
+            {
+                case PillarMode.Focus:
+                    if (focusStream != null)
+                    {
+                        NetworkedPillarHeight = focusStream.Focus;
+                        Debug.Log($"Focus: {NetworkedPillarHeight}");
+                    }
+                    break;
+
+                case PillarMode.Alpha:
+                    if (bandPowerStream != null)
+                    {
+                        NetworkedPillarHeight = bandPowerStream.AverageBandPower.Alpha;
+                        Debug.Log($"Alpha: {NetworkedPillarHeight}");
+                    }
+                    break;
+
+                case PillarMode.Beta:
+                    if (bandPowerStream != null)
+                    {
+                        NetworkedPillarHeight = bandPowerStream.AverageBandPower.Beta;
+                        Debug.Log($"Beta: {NetworkedPillarHeight}");
+                    }
+                    break;
+            }
         }
 
         // All clients update their visual representation
-        alphaPillar.transform.localScale = new Vector3(1, NetworkedAlphaPillarHeight, 1);
-        betaPillar.transform.localScale = new Vector3(1, NetworkedBetaPillarHeight, 1);
-        focusPillar.transform.localScale = new Vector3(1, NetworkedFocusPillarHeight, 1);
-
-        // Optional debug
-        Debug.Log($"Alpha: {NetworkedAlphaPillarHeight}");
-        Debug.Log($"Beta: {NetworkedBetaPillarHeight}");
-        Debug.Log($"Focus: {NetworkedFocusPillarHeight}");
+        pillar.transform.localScale = new Vector3(1, NetworkedPillarHeight, 1);
     }
 }

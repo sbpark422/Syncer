@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/Colocation/Scenes/test.unity
     guid: 02bf737e016e4401ba621375fbb0af19
   - enabled: 0
-    path: Assets/Scene/Syncer.unity
+    path: Assets/Scene/Syncer_Previous.unity
     guid: 5463508a1f6804f1ba37c31272fcaa15
   - enabled: 0
     path: Assets/Scene/WebConnection.unity

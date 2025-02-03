@@ -69,4 +69,4 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 ---
 
 ## 🌐 **Contact**
-For inquiries, reach out to us at **[your-email@example.com](mailto:sbpark422@gmail.com)**.
+For inquiries, reach out to us at **[sbpark422@gmail.com](mailto:sbpark422@gmail.com)**.
